@@ -1,0 +1,30 @@
+library(tidyverse)
+df <- read.table(pipe("pbpaste"), sep="\t", header=F)
+
+fuel <- function(c = df){
+  c %>% mutate(V1 = floor(.[[1]]/3) - 2
+               ) %>% summarise(sum(V1))
+}
+fuel(df)
+#3405721
+
+fuelforfuel <- function(x) {
+  success <- FALSE
+  y <- 0
+  while (!success) {
+    # do something
+    x <- max(floor(x/3) - 2,0)
+    # check for success
+    success <- (x <= 0)
+    y <- x + y
+  }
+  return(y)
+}
+fuelforfuel(100756)
+#50346
+sum(sapply(df$V1,fuelforfuel))
+#5105716
+
+
+
+
