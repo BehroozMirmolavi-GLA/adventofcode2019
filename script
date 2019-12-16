@@ -82,18 +82,12 @@ df[2:3]
 
 # day 3 -------------------------------------------------------------------
 library(retistruct)
-#intersecting lines
-a <- line.line.intersection(c(0, 0), c(0, 1), c(1, 0), c(1, 1))
-is.infinite(a)[1]
-#Read data
 dforig <- read.table(pipe("pbpaste"), sep = ",", header = F)
 a <- as.character(unlist(dforig[1, ], use.names = FALSE))
-a <-
-  data.frame(a) %>% separate(a, into = c("direction", "distance"),
+a <- data.frame(a) %>% separate(a, into = c("direction", "distance"),
                              sep = "(?<=[A-Za-z])(?=[0-9])")
 b <- as.character(unlist(dforig[2, ], use.names = FALSE))
-b <-
-  data.frame(b) %>% separate(b, into = c("direction", "distance"),
+b <- data.frame(b) %>% separate(b, into = c("direction", "distance"),
                              sep = "(?<=[A-Za-z])(?=[0-9])")
 
 instructiontovector <- function(a) {
@@ -158,3 +152,31 @@ for (i in 1:(nrow(a1) - 1)) {
     }
   }
 } 
+
+#part 2, this time optimise for minimise steps (cum sum of row)
+distance <- Inf
+for (i in 1:(nrow(a1) - 1)) {
+  for (j in 1:(nrow(a1) - 1)) {
+    intersection <- line.line.intersection(unlist(a1[j,])
+                                           ,
+                                           unlist(a1[j + 1,])
+                                           ,
+                                           unlist(b1[i,])
+                                           ,
+                                           unlist(b1[i + 1,]),
+                                           interior.only = T)
+    
+    if (!is.na(intersection[1])) {
+      dist <- sum(a[1:(j), 2]) + sum(b[1:(i), 2]) +
+        abs(sum(intersection - a1[j, ])) +
+        abs(sum(intersection - b1[i, ]))
+      
+      if (dist < distance) {
+        success <- bind_rows(a1[j,], a1[j + 1,], b1[i,], b1[i + 1,])
+        distance <- pmin(dist, distance)
+        i2 <- paste(i)
+        j2 <-  paste(j)
+      }
+    }
+  }
+}
