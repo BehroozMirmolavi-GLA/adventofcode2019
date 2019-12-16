@@ -50,16 +50,18 @@ dforig <- readClipboard()
 dforig <- as.numeric(unlist(strsplit(dforig, ',')))
 # df <- dforig
 
-possibilities <- expand.grid(x = seq(1,100,1), y = seq(1,100,1))
+possibilities <- expand.grid(x = seq(1, 100, 1), y = seq(1, 100, 1))
 #around 7 minute 40 estimated run time
 start_time <- Sys.time()
 x <- 1
 while (!success) {
   # do something
   df <- dforig
-  df[2] <- possibilities[x,]$x
-  df[3] <- possibilities[x,]$y
-  for (i in seq(from = 1, to = length(df), by = 4)) {
+  df[2] <- possibilities[x, ]$x
+  df[3] <- possibilities[x, ]$y
+  for (i in seq(from = 1,
+                to = length(df),
+                by = 4)) {
     if (df[i] == 1) {
       df[df[i + 3] + 1] <- df[df[i + 1] + 1] + df[df[i + 2] + 1]
     } else if (df[i] == 2) {
@@ -77,3 +79,82 @@ end_time - start_time
 #successful values
 df[2:3]
 #8609
+
+# day 3 -------------------------------------------------------------------
+library(retistruct)
+#intersecting lines
+a <- line.line.intersection(c(0, 0), c(0, 1), c(1, 0), c(1, 1))
+is.infinite(a)[1]
+#Read data
+dforig <- read.table(pipe("pbpaste"), sep = ",", header = F)
+a <- as.character(unlist(dforig[1, ], use.names = FALSE))
+a <-
+  data.frame(a) %>% separate(a, into = c("direction", "distance"),
+                             sep = "(?<=[A-Za-z])(?=[0-9])")
+b <- as.character(unlist(dforig[2, ], use.names = FALSE))
+b <-
+  data.frame(b) %>% separate(b, into = c("direction", "distance"),
+                             sep = "(?<=[A-Za-z])(?=[0-9])")
+
+instructiontovector <- function(a) {
+  a$distance <- as.numeric(a$distance)
+  df <- data.frame("x" = as.numeric(), "y" = as.numeric())
+  
+  if (a[1, 1] == "R") {
+    df[1, 1] <- 0 + a[1, 2]
+    df[1, 2] <- 0
+  } else if (a[1, 1] == "L") {
+    df[1, 1] <- 0 - a[1, 2]
+    df[1, 2] <- 0
+  } else if (a[1, 1] == "U") {
+    df[1, 2] <- 0 + a[1, 2]
+    df[1, 1] <- 0
+  } else if (a[1, 1] == "D") {
+    df[1, 2] <- 0 - a[1, 2]
+    df[1, 1] <- 0
+  }
+  
+  for (i in 2:nrow(a)) {
+    if (a[i, 1] == "R") {
+      df[i, 1] <- df[i - 1, 1] + a[i, 2]
+      df[i, 2] <- df[i - 1, 2]
+    } else if (a[i, 1] == "L") {
+      df[i, 1] <- df[i - 1, 1] - a[i, 2]
+      df[i, 2] <- df[i - 1, 2]
+    } else if (a[i, 1] == "U") {
+      df[i, 2] <- df[i - 1, 2] + a[i, 2]
+      df[i, 1] <- df[i - 1, 1]
+    } else if (a[i, 1] == "D") {
+      df[i, 2] <- df[i - 1, 2] - a[i, 2]
+      df[i, 1] <- df[i - 1, 1]
+    }
+  }
+  return(df)
+}
+
+#then check each dont intersect at interior point using line.line
+a1 <- instructiontovector(a)
+b1 <- instructiontovector(b)
+
+distance <- Inf
+for (i in 1:(nrow(a1) - 1)) {
+  for (j in 1:(nrow(a1) - 1)) {
+    intersection <- line.line.intersection(unlist(a1[j, ])
+                                           ,
+                                           unlist(a1[j + 1, ])
+                                           ,
+                                           unlist(b1[i, ])
+                                           ,
+                                           unlist(b1[i + 1, ]),
+                                           interior.only = T)
+    
+    if (!is.na(intersection[1])) {
+      dist <- abs(intersection[1] - 0) + abs(intersection[2] - 0)
+      
+      if (dist < distance) {
+        success <- bind_rows(a1[j, ], a1[j + 1, ], b1[i, ], b1[i + 1, ])
+        distance <- pmin(dist, distance)
+      }
+    }
+  }
+} 
