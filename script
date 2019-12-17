@@ -180,3 +180,67 @@ for (i in 1:(nrow(a1) - 1)) {
     }
   }
 }
+
+# day 4 -------------------------------------------------------------------
+#147981-691423
+range <- 147981:691423
+success <- as.numeric()
+
+for (i in 1:length(range)) {
+  digits <- as.numeric(unlist(str_split(range[i], "")))
+  
+  if (digits[2] < digits[1]) {
+    next
+  } else if (digits[3] < digits[2]) {
+    next
+  } else if (digits[4] < digits[3]) {
+    next
+  } else if (digits[5] < digits[4]) {
+    next
+  } else if (digits[6] < digits[5]) {
+    next
+  } else if (length(unique(digits)) == 6) {
+    next
+  } else {
+    success <- c(success, as.numeric(paste(digits, collapse = "")))
+  }
+}
+}
+#1790
+#part 2
+success <- as.numeric()
+#digits <- as.numeric(unlist(str_split(155566,"")))
+for (i in 1:length(range)) {
+  digits <- as.numeric(unlist(str_split(range[i], "")))
+  
+  if (digits[2] < digits[1]) {
+    next
+  } else if (digits[3] < digits[2]) {
+    next
+  } else if (digits[4] < digits[3]) {
+    next
+  } else if (digits[5] < digits[4]) {
+    next
+  } else if (digits[6] < digits[5]) {
+    next
+  } else if (length(unique(digits)) == 6) {
+    next
+  } else {
+    k = 1
+    while (k < 6) {
+      state = TRUE
+      n = 0
+      while (state & k < 6) {
+        state = digits[k] == digits[k + 1]
+        if (state) {
+          n = n + 1
+        }
+        k = k + 1
+      }
+    }
+    if (n == 1) {
+      success <- c(success, as.numeric(paste(digits, collapse = "")))
+    }
+  }
+}
+}
