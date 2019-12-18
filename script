@@ -244,3 +244,69 @@ for (i in 1:length(range)) {
   }
 }
 }
+
+# day 5  -------------------------------------------------------------------
+df <- readClipboard()
+df <- as.numeric(unlist(strsplit(df, ',')))
+
+interpret_instruction <- function(instruction){
+  instruction <- as.numeric(unlist(str_split(instruction, "")))
+  #add leading zeros
+  instruction <- c(rep(0,5-length(instruction)),instruction)  
+  return(list(
+    op_code = as.numeric(paste0(instruction[4], instruction[5])),
+    param_a = instruction[3],
+    param_b = instruction[2],
+    param_c = instruction[1]
+  ))
+}
+
+eval_mode <- function(parameter, program, position){
+  
+  if (parameter == 0) {
+    return(program[program[position+1]+1])
+  } else if (parameter == 1) {
+    return(program[position+1])
+  }
+}
+
+intcode_computer = function(program = df, input = 1, position = 1){
+  output = list()
+  n_output <- 1
+  while (position < length(program)) {
+  instruction <- interpret_instruction(program[position])
+  #df[position:(position+5)]
+  if (instruction$op_code == 1) {
+    
+    program[program[position+3]] <- eval_mode(instruction$param_a,program, position) + eval_mode(instruction$param_b,program, position+1)
+    position <- position + 5
+    
+  } else if (instruction$op_code == 2) {
+    
+    program[program[position+3]] <- eval_mode(instruction$param_a,program, position) * eval_mode(instruction$param_b,program, position+1)
+    position <- position + 5
+    
+  } else if (instruction$op_code == 3) {
+    
+    program[program[position+1]] <- input
+    position <- position + 2
+    
+  } else if (instruction$op_code == 4) {
+    
+    output[[n_output]] = instruction$param_a
+    print(output)
+    position <- position + 2
+    n_output <- n_output + 1
+    
+  } else if (instruction$op_code == 99) {
+    print(output)
+  } else {
+    print(position)
+    stop("Error")
+  }
+  }
+  
+  return(program)
+}
+a <- intcode_computer(df)
+
