@@ -389,3 +389,24 @@ intcode_computer <- function(program = df, input = 5, position = 1){
 a <- intcode_computer(df)
 
 
+# day 6 -------------------------------------------------------------------
+
+df <- readClipboard()
+df <- data.frame(matrix(unlist(
+  strsplit(df, ')'))
+  ,nrow = 1013
+  ,byrow = T))
+colnames(df) <- c("body","orbiter")
+
+head(df)
+
+for (i in 1:nrow(df)){
+  
+  body <- df[i,1]
+  orbiter <- df[i,2]
+  find <- TRUE
+  while () {
+  nextorbit <-   
+  n = n + 1
+  }
+}
