@@ -310,3 +310,82 @@ intcode_computer = function(program = df, input = 1, position = 1){
 }
 a <- intcode_computer(df)
 
+#part 2
+
+intcode_computer <- function(program = df, input = 5, position = 1){
+  output <- list()
+  n_output <- 1
+  while (position < length(program)) {
+    print(position)
+    instruction <- interpret_instruction(program[position])
+    print(instruction)
+    if (instruction$op_code == 1) {
+      
+      program[program[position+3]+1] <- eval_mode(instruction$param_a,program, position) + eval_mode(instruction$param_b,program, position+1)
+      position <- position + 4
+      
+    } else if (instruction$op_code == 2) {
+      
+      program[program[position+3]+1] <- eval_mode(instruction$param_a,program, position) * eval_mode(instruction$param_b,program, position+1)
+      position <- position + 4
+      
+    } else if (instruction$op_code == 3) {
+      
+      program[program[position+1]+1] <- input
+      position <- position + 2
+      
+    } else if (instruction$op_code == 4) {
+      
+      output[[n_output]] <- eval_mode(instruction$param_a,program, position)
+      position <- position + 2
+      n_output <- n_output + 1
+      
+    } else if (instruction$op_code == 5) {
+      
+      if(eval_mode(instruction$param_a,program, position) != 0){
+        
+        position <- eval_mode(instruction$param_b,program, position+1) + 1
+        
+      } else {
+        
+        position <- position + 3
+        
+      }
+      
+    } else if (instruction$op_code == 6) {
+      
+      if(eval_mode(instruction$param_a,program, position) == 0){
+        
+        position <- eval_mode(instruction$param_b,program, position+1) + 1
+        
+      } else {
+        
+        position <- position + 3
+        
+      }
+      
+      
+    } else if (instruction$op_code == 7) {
+      
+      program[program[position + 3] + 1] <- ifelse(eval_mode(instruction$param_a,program, position) < eval_mode(instruction$param_b,program, position+1), 1, 0)
+      position <- position + 4
+      
+    } else if (instruction$op_code == 8) {
+      
+      program[program[position + 3] + 1] <- ifelse(eval_mode(instruction$param_a,program, position) == eval_mode(instruction$param_b,program, position+1), 1, 0)
+      position <- position + 4
+      
+    } else if (instruction$op_code == 99) {
+      print(output)
+      break
+    } else {
+      print(position)
+      stop("Error")
+    }
+  }
+  return(program)
+}
+
+a <- intcode_computer(df)
+
+
