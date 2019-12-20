@@ -395,18 +395,82 @@ df <- readClipboard()
 df <- data.frame(matrix(unlist(
   strsplit(df, ')'))
   ,nrow = 1013
-  ,byrow = T))
+  ,byrow = T),stringsAsFactors = F)
 colnames(df) <- c("body","orbiter")
 
-head(df)
-
+output <- list()
 for (i in 1:nrow(df)){
-  
-  body <- df[i,1]
-  orbiter <- df[i,2]
+  b <- df[i,1]
   find <- TRUE
-  while () {
-  nextorbit <-   
+  n <- 0
+  while (find) {
+  nextorbit <- df[which(df$orbiter == b),] 
+  if (all(is.na(nextorbit))) {
+  output[[i]] <- n  
+  find = FALSE  
+  } else {
+  b <- nextorbit[,1] 
   n = n + 1
   }
+  }
 }
+#add all the 'direct' orbits (double counting in my eyes)
+sum(unlist(output))+1013
+
+#part 2
+#find nearest common body
+outputYOU <- list()
+b <- df[which(df$orbiter == "YOU"),1] 
+find <- TRUE
+n <- 1
+i = 1
+while (find) {
+  nextorbit <- df[which(df$orbiter == b),] 
+  (all(is.na(nextorbit)))
+  if (all(is.na(nextorbit))) {
+    outputYOU[[i]] <- c(b,n) 
+    find = FALSE  
+  } else {
+    outputYOU[[i]] <- c(b,n) 
+    b <- nextorbit[,1] 
+    n = n + 1
+    i = i + 1
+  }
+}
+
+outputSAN <- list()
+b <- df[which(df$orbiter == "SAN"),1] 
+find <- TRUE
+n <- 1
+i = 1
+while (find) {
+  nextorbit <- df[which(df$orbiter == b),] 
+  (all(is.na(nextorbit)))
+  if (all(is.na(nextorbit))) {
+    outputSAN[[i]] <- c(b,n) 
+    find = FALSE  
+  } else {
+    outputSAN[[i]] <- c(b,n) 
+    b <- nextorbit[,1] 
+    n = n + 1
+    i = i + 1
+  }
+}
+
+outputYOU <- data.frame(matrix(unlist(
+  outputYOU)
+  ,nrow = length(outputYOU)
+  ,byrow = T), stringsAsFactors = F)
+colnames(outputYOU) <- c("body", "valueY")
+outputYOU$valueY <- as.numeric(outputYOU$valueY)
+outputSAN <- data.frame(matrix(unlist(
+  outputSAN)
+  ,nrow = length(outputSAN)
+  ,byrow = T), stringsAsFactors = F)
+colnames(outputSAN) <- c("body", "valueS")
+outputSAN$valueS <- as.numeric(outputSAN$valueS)
+
+#find common with lowest value
+inner_join(outputYOU, outputSAN, by = "body") %>% mutate(value = valueY + valueS)
+#take away one for getting to orbit near SAN and take away another as the move towards the commonality is counted from both sides
+285-2
