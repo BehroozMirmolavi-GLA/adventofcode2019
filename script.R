@@ -474,3 +474,18 @@ outputSAN$valueS <- as.numeric(outputSAN$valueS)
 inner_join(outputYOU, outputSAN, by = "body") %>% mutate(value = valueY + valueS)
 #take away one for getting to orbit near SAN and take away another as the move towards the commonality is counted from both sides
 285-2
+
+
+# day 8 -------------------------------------------------------------------
+
+df <- readClipboard()
+df <- as.numeric(unlist(strsplit(df,split = "")))
+#it says 25 tall but thats irrelevant, if we need a layer to be 25*6 thats 150
+matrix <- matrix(df,nrow = 100, ncol = 150, byrow = T)
+#for each layer of 6 rows, count 0s
+count <- rowSums(matrix(df==0,nrow = 100, ncol = 150, byrow = T))
+#Looks like layer 16, at 6 zeros
+
+#count number of 1s layer 16 and multiply with 2s
+sum(matrix[16,]==1)*
+sum(matrix[16,]==2)
