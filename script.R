@@ -1,4 +1,5 @@
 library(tidyverse)
+library(reshape2)
 
 
 # day 1 -------------------------------------------------------------------
@@ -489,3 +490,24 @@ count <- rowSums(matrix(df==0,nrow = 100, ncol = 150, byrow = T))
 #count number of 1s layer 16 and multiply with 2s
 sum(matrix[16,]==1)*
 sum(matrix[16,]==2)
+
+# day 8 part 2 -------------------------------------------------------------------
+#alter pixels if they are 2 to be the one in the next layer (+25*6)
+df2 <- df
+for (i in 1:150) {
+k <- 0
+while (df[i + 25*6*k] == 2 & (i + 25*6*k) < 15000) {
+k <- k + 1
+} 
+df2[i] <- df[i + 25*6*k] 
+}
+#seq(from = 1, by = 150, length.out = 60)
+matrix <- data.frame(matrix(df2[150:1],nrow = 6, ncol = 25, byrow = T))
+
+matrix <- add_rownames(matrix) %>% 
+  melt(id.var = c('rowname'), na.rm = T)
+
+#needs flipping
+ggplot(data = matrix, aes(x=variable, y=rowname, fill=factor(value))) + 
+  geom_tile() +
+  coord_equal() + scale_fill_manual(values=c("black", "white"))
